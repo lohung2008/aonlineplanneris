@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Planner Mate - Lịch học</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
+    }
+  });
+
+  function toggleDarkMode() {
+    const isDark = document.body.classList.toggle("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  }
+</script>
+</script> 
+<body>
+  <div class="container">
+
+    <header class="app-header">
+      <h1>Lịch học đề xuất</h1>
+      <button class="theme-btn" onclick="toggleDarkMode()">🌙</button>
+    </header>
+
+    <div class="card result-card">
+        <div id="summary-display" class="summary-box"></div> 
+        
+        <div id="schedule-calendar" class="schedule-calendar-container"> 
+            </div>
+
+    </div> 
+    
+    </div>
+
+  <script src="result.js"></script>
+
+</body>
+</html>

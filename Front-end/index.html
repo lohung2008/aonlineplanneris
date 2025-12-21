@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Planner Mate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <div>
+        <h1>AI Study Planner</h1>
+        <p>Lập lịch học cá nhân hóa cho học sinh khối 12</p>
+      </div>
+      <button id="theme-toggle" class="theme-btn">🌙</button>
+    </header>
+
+    <!-- CARD FORM -->
+    <div class="card">
+      <form id="study-form">
+
+        <h2>Thông tin học tập</h2>
+
+        <label>Mục tiêu học tập</label>
+        <input type="text" id="goal" required placeholder="VD: Đạt 8.5 điểm môn Toán và đỗ Đại học Ngoại thương">
+        <label>Các môn học</label>
+        <div class="subject-grid">
+            <label><input type="checkbox" class="subject-checkbox" value="Toán"> Toán</label>
+            <label><input type="checkbox" class="subject-checkbox" value="Ngữ văn"> Ngữ văn</label>
+            <label><input type="checkbox" class="subject-checkbox" value="Tiếng Anh"> Tiếng Anh</label>
+            <label><input type="checkbox" class="subject-checkbox" value="Vật lý"> Vật lý</label>
+            <label><input type="checkbox" class="subject-checkbox" value="Hóa học"> Hóa học</label>
+            <label><input type="checkbox" class="subject-checkbox" value="Sinh học"> Sinh học</label>
+            <label><input type="checkbox" class="subject-checkbox" value="Lịch sử"> Lịch sử</label>
+            <label><input type="checkbox" class="subject-checkbox" value="Địa lý"> Địa lý</label>
+        </div>
+
+
+        <label style="margin-top: 25px;">Mức độ học lực hiện tại (1–10)</label>
+            <div id="levelInputs" class="level-group"> 
+          </div>
+
+
+        <label>Thời gian rảnh mỗi ngày (giờ)</label>
+        <input type="number" id="freeTime" min="1" max="24" placeholder="VD: 3">
+
+        <label>Điểm yếu cần cải thiện</label>
+        <textarea id="weakPoints" rows="3"
+          placeholder="VD: Hàm số, đọc hiểu, viết đoạn văn..."></textarea>
+
+        <label>Thời gian muốn lập kế hoạch</label>
+        <select id="days">
+          <option value="7">7 ngày (1 tuần)</option>
+          <option value="15">15 ngày</option>
+          <option value="30">30 ngày (1 tháng)</option>
+          <option value="60">60 ngày (2 tháng)</option>
+          <option value="90">90 ngày (3 tháng)</option>
+          <option value="180">180 ngày (6 tháng)</option>
+        </select>
+
+        <button type="submit" class="submit-btn">
+            🚀 Tạo lịch học
+        </button>
+      </form>
+      <div id="loading-spinner" style="display: none; text-align: center; margin-top: 20px;">
+    <p>Chúng tôi đang lập lịch học và làm giàu nội dung... Vui lòng chờ 5-10 giây.</p>
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Đang tải...</span>
+    </div>
+    </div>
+    </div>
+
+  </div>
+
+    <script src="script.js">
+
+    </script>
+</body>
+</html>

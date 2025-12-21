@@ -1,0 +1,350 @@
+/* ===== RESET ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* ===== COLOR VARIABLES ===== */
+:root {
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --text: #1f2937;
+  --subtext: #6b7280;
+  --primary: #4f46e5;
+  --border: #e5e7eb;
+}
+
+body.dark {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f8fafc;
+  --subtext: #cbd5f5;
+  --primary: #818cf8;
+  --border: #334155;
+}
+
+/* ===== BODY & CONTAINER ===== */
+body {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 30px;
+  transition: 0.3s;
+  overflow-x: hidden; /* Ngăn scroll ngang */
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 0 15px; /* Thêm padding cho mobile */
+}
+
+/* ===== HEADER ===== */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.app-header h1 {
+  font-size: 32px;
+}
+
+.app-header p {
+  color: var(--subtext);
+  margin-top: 6px;
+}
+
+.theme-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* ===== CARD & FORM ELEMENTS ===== */
+.card {
+  max-width: 600px;
+  width: 95%; /* Mở rộng tối đa trên mobile */
+  margin: auto;
+  background: var(--card);
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.card h2 {
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+input, select, textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card); 
+  color: var(--text);
+}
+
+/* Fix dropdown dark mode */
+select, option {
+  background-color: var(--card);
+  color: var(--text);
+}
+
+/* ===== GROUPS ===== */
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 20px;
+  margin-top: 8px;
+}
+
+/* Input học lực (Level Inputs) */
+.level-input-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px; 
+    overflow: hidden; 
+    transition: 
+        max-height 0.4s ease-out, 
+        opacity 0.3s ease-out, 
+        margin-bottom 0.4s ease-out;
+}
+
+.level-input-wrapper input[type="number"] {
+    width: 80px; /* Chiều rộng cố định cho input */
+    flex-shrink: 0; /* Ngăn input bị co lại */
+    text-align: center;
+}
+
+.level-label {
+    flex-grow: 1; 
+    margin-bottom: 0;
+}
+
+/* --- Trạng thái ẨN (Animation) --- */
+.level-input-wrapper.hidden {
+    opacity: 0;
+    max-height: 0; 
+    margin-bottom: 0; 
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* --- Trạng thái HIỆN (Animation) --- */
+.level-input-wrapper.visible {
+    opacity: 1;
+    max-height: 100px; 
+    margin-bottom: 10px;
+    padding-top: 5px; 
+}
+
+/* ===== BUTTON & UTILS ===== */
+.submit-btn {
+  margin-top: 32px;
+  width: 100%;
+  padding: 15px 18px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.25);
+  transition: all 0.25s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(79, 70, 229, 0.35);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 15px rgba(79, 70, 229, 0.25);
+}
+
+/* Hiệu ứng checkbox */
+.subject-grid label {
+    transition: transform 0.2s ease-in-out; 
+}
+.subject-grid label:hover {
+    transform: translateX(3px);
+}
+
+
+/* ======================================= */
+/* 🚨 MEDIA QUERIES (Tối ưu cho mobile) */
+/* ======================================= */
+
+@media (max-width: 600px) {
+    body {
+        padding: 15px;
+    }
+    
+    .app-header h1 {
+        font-size: 1.8em;
+    }
+    .app-header p {
+        font-size: 0.9em;
+    }
+
+    /* Giảm số cột môn học thành 2 và thu hẹp khoảng cách */
+    .subject-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    /* Đảm bảo input học lực hiển thị dọc nếu cần */
+    .level-input-wrapper {
+        flex-direction: column; 
+        align-items: flex-start;
+        gap: 5px;
+        padding: 5px 0;
+        margin-bottom: 15px;
+    }
+    
+    .level-label {
+        width: 100%; /* Label chiếm toàn bộ chiều ngang */
+        margin-bottom: 0;
+    }
+
+    .level-input-wrapper input[type="number"] {
+        width: 100%; /* Input chiếm toàn bộ chiều ngang */
+        max-width: none;
+        text-align: left;
+    }
+}
+/* ======================================= */
+/* ===== RESULT PAGE (OUTPUT) STYLES ===== */
+/* ======================================= */
+
+.result-card {
+    max-width: 900px;
+    padding: 30px;
+}
+
+.summary-box {
+    margin-bottom: 25px;
+    padding: 15px;
+    border-radius: 8px;
+    background: rgba(var(--primary), 0.1);
+    border-left: 4px solid var(--primary);
+    font-size: 1.05em;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+.summary-box strong {
+    color: var(--primary);
+}
+
+
+/* ======================================= */
+/* ===== LỊCH HỌC DẠNG BẢNG (CALENDAR) ===== */
+/* ======================================= */
+
+.schedule-calendar-container {
+    display: flex; 
+    flex-direction: column;
+    gap: 20px;
+}
+
+.day-schedule-entry {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: var(--primary);
+    color: white;
+}
+
+.day-header h3 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.session-block-container {
+    padding: 15px;
+}
+
+.session-block {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border);
+}
+
+.session-block:last-child {
+    border-bottom: none; 
+}
+
+.session-time {
+    flex-basis: 80px; 
+    font-weight: 600;
+    color: var(--primary);
+    margin-right: 15px;
+    padding-top: 2px;
+}
+
+.session-content {
+    flex-grow: 1;
+}
+
+.session-content .subject-name {
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+}
+
+.session-content .subject-details {
+    font-size: 0.9em;
+    color: var(--subtext);
+}
+
+/* --- TỐI ƯU RESPONSIVE CHO LỊCH HỌC (DƯỚI 600px) --- */
+@media (max-width: 600px) {
+    .result-card {
+        padding: 15px;
+    }
+    
+    .day-header h3 {
+        font-size: 1.2em;
+    }
+
+    .session-block {
+        flex-direction: column; 
+        align-items: flex-start;
+        padding: 10px 0;
+    }
+
+    .session-time {
+        margin-right: 0;
+        margin-bottom: 5px; 
+        flex-basis: auto; 
+        font-size: 0.9em;
+    }
+}
