@@ -1,66 +1,84 @@
-// Back-end/aiService.js (Phiên bản đã sửa lỗi biến và Prompt)
+// Back-end/aiService.js (Phiên bản ĐÃ THÊM XỬ LÝ LỖI JSON)
 
 const { GoogleGenAI } = require("@google/genai"); 
+// 🚨 Đảm bảo bạn đã cài đặt thư viện @google/genai 
+// và khai báo biến môi trường cho GEMINI_API_KEY
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }); 
 
-// Lấy Key từ biến môi trường của hệ thống (Render, .env, v.v.)
-// Nếu GEMINI_API_KEY không được đặt, nó sẽ trả về undefined
-const apiKey = process.env.GEMINI_API_KEY; 
+// Prompt cho AI để làm giàu nội dung
+const getSystemPrompt = (rawPlan) => {
+    return `
+Bạn là Trợ lý Lập kế hoạch học tập AI. Dưới đây là dữ liệu thô về lịch học:
 
-if (!apiKey) {
-    console.error("LỖI: Biến môi trường GEMINI_API_KEY chưa được thiết lập.");
-    // Tùy chọn: Dùng Key cứng cho mục đích phát triển cục bộ nếu cần thiết, 
-    // nhưng tốt nhất là BỎ HẲN.
+    Dữ liệu thô: ${JSON.stringify(rawPlan)}
+
+    Mục tiêu của bạn là biến 'rawPlan' thành 'finalSchedule' bằng cách làm giàu nội dung chi tiết cho từng buổi học (session).
+
+    **QUY TẮC BẮT BUỘC:**
+    1.  **Luân phiên & Lồng ghép môn học (Micro-sessions):** KHÔNG được để một môn học xuất hiện QUÁ 2 LẦN LIÊN TIẾP trong các buổi học (sessions) của cùng một ngày. Nếu có thể, hãy lồng ghép các hoạt động nhẹ (như Đọc tin tức, Luyện viết đoạn văn, 20 phút Tiếng Anh, thiền) vào giữa các buổi học chính (1.5 giờ) để tối ưu hóa sự tập trung.
+    2.  **Phương pháp học tập hiệu quả (Phải được nêu rõ trong details):** Áp dụng các phương pháp học tập như: Active Recall, Spaced Repetition (từ Ngày 2), và Feynman Technique một cách hiệu quả, tránh lặp lại.
+ĐẦU RA BẮT BUỘC phải là MỘT CHUỖI JSON DUY NHẤT có cấu trúc sau:
+{
+  "schedule": [
+    {
+      "day": "Ngày 1",
+      "sessions": [
+        {
+          "subject": "Toán",
+          "duration": 1.0,
+          "details": "Học Toán (1.0 giờ)",
+          "topics": ["Ôn tập hàm số bậc nhất (nếu điểm yếu là Hàm số)"], // 🚨 Thêm mảng topics
+        },
+        // ... các buổi học khác ...
+      ]
+    },
+    // ... các ngày khác ...
+  ],
+  "summary": "Mục tiêu: [Mục tiêu cũ]. Điểm yếu: [Điểm yếu cũ]...", // Giữ nguyên summary cũ
+  "goal": "[Mục tiêu cũ]",
+  "weakPoints": "[Điểm yếu cũ]",
+  "aiSummary": "[Tóm tắt AI mới dựa trên mục tiêu/điểm yếu]", // 🚨 Tóm tắt mới (3-5 câu)
 }
 
-const ai = new GoogleGenAI({apiKey: apiKey}); // SỬ DỤNG BIẾN apiKey ĐƯỢC ĐỌC TỪ process.env
-// Hàm làm giàu nội dung (enrichContent)
-// 🚨 Đảm bảo tham số ĐƯỢC ĐẶT TÊN là 'rawSchedule' để khớp với prompt bên trong
-async function enrichContent(rawSchedule) {
-    if (!rawSchedule || !rawSchedule.schedule) {
-        // Lỗi này giúp xác định nếu dữ liệu đầu vào không hợp lệ
-        throw new Error("Dữ liệu lịch học thô từ scheduler không hợp lệ.");
-    }
-    
-    // Sử dụng biến rawSchedule trong Prompt
-    const prompt = `
-    Vai trò: Bạn là chuyên gia lập kế hoạch học tập cá nhân hóa.
+Lịch học thô là: ${JSON.stringify(rawPlan, null, 2)}
+`;
+};
 
-Nhiệm vụ: Lấy dữ liệu lịch học thô (rawSchedule) và làm giàu (enrich) nội dung cho trường details của mỗi session bằng cách tạo một kế hoạch học tập chi tiết, áp dụng kết hợp các phương pháp học tập tiên tiến.
 
-Yêu cầu chi tiết cho mỗi buổi học (session.details):
-
-Chủ đề/Mục tiêu chính (Chủ động): Xác định rõ mục tiêu cần đạt được trong 1 giờ học này, tập trung vào việc khắc phục điểm yếu (weakPoints).
-
-Khởi động (5-10 phút): Áp dụng Active Recall hoặc Spaced Repetition (ôn tập nhanh kiến thức cũ từ 1-2 ngày trước).
-
-Học tập sâu (40-45 phút): Tập trung vào việc giải quyết các bài tập khó hoặc nội dung quan trọng. Áp dụng Kỹ thuật Feynman (tóm tắt/giải thích cho người khác) hoặc Luyện tập xen kẽ (Interleaving) nếu môn học cho phép.
-
-Kết thúc & Đánh giá (5-10 phút): Tự đánh giá, ghi lại các điểm chưa hiểu rõ (Confusion Points) và lập Quick Plan cho buổi học tiếp theo.
-
-Cấu trúc Thời gian: Dùng kỹ thuật Pomodoro (ví dụ: 25 phút học, 5 phút nghỉ) trong khoảng thời gian 1.0 giờ này.
-
-Định dạng đầu ra: Phải là JSON hợp lệ, giữ nguyên cấu trúc của rawSchedule và chỉ cập nhật trường details cho mỗi session.
-    `;
+async function enrichContent(rawPlan) {
+    const prompt = getSystemPrompt(rawPlan);
 
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash", 
+            model: "gemini-2.5-flash",
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
             }
         });
         
-        // Cần đảm bảo output là JSON hợp lệ
-        const jsonText = response.text.trim().replace(/^```json|```$/g, '');
-        return JSON.parse(jsonText);
+        const rawJsonText = response.text.trim();
+        
+        // 🚨 XỬ LÝ LỖI JSON PARSING TẠI ĐÂY
+        try {
+            // Thử phân tích cú pháp JSON
+            const finalSchedule = JSON.parse(rawJsonText);
+            
+            // Nếu JSON hợp lệ, trả về
+            return finalSchedule; 
 
-    } catch (error) {
-        // Đặt tên lỗi rõ ràng hơn để dễ debug
-        error.message = `Lỗi gọi API Gemini (Khóa API hoặc Parsing): ${error.message}`;
-        throw error;
+        } catch (jsonError) {
+            // Bắt lỗi "Unterminated string" hoặc lỗi parsing khác
+            console.error("LỖI JSON PARSING: Dữ liệu từ AI không phải JSON hợp lệ hoặc bị cắt ngắn.");
+            // Ném một lỗi mới để khối try...catch trong server.js bắt và trả về lịch thô
+            throw new Error(`Lỗi Parsing JSON từ AI: ${jsonError.message}. Dữ liệu AI trả về: ${rawJsonText.substring(0, 200)}...`);
+        }
+
+    } catch (apiError) {
+        // Bắt lỗi gọi API (ví dụ: Khóa API sai, lỗi kết nối)
+        console.error("LỖI GỌI API GEMINI:", apiError.message);
+        throw new Error(`Lỗi gọi API Gemini (Khóa API hoặc Parsing): ${apiError.message.split('\n')[0]}`);
     }
 }
-
 
 module.exports = { enrichContent };
