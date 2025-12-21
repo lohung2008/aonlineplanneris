@@ -1,12 +1,18 @@
 // Back-end/aiService.js (Phiên bản đã sửa lỗi biến và Prompt)
 
-const { GoogleGenAI } = require("@google/genai");
+const { GoogleGenAI } = require("@google/genai"); 
 
-// 🚨 ĐẢM BẢO KHÓA API CỦA BẠN ĐƯỢC ĐẶT TRONG DẤU NGOẶC KÉP ("...")
-// THAY 'YOUR_VALID_GEMINI_API_KEY_HERE' BẰNG KHÓA CỦA BẠN.
-const GEMINI_API_KEY = "AIzaSyBfrTul5PJD6Gpo1ynHmWk0ti4b7d6i13c"; 
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+// Lấy Key từ biến môi trường của hệ thống (Render, .env, v.v.)
+// Nếu GEMINI_API_KEY không được đặt, nó sẽ trả về undefined
+const apiKey = process.env.GEMINI_API_KEY; 
 
+if (!apiKey) {
+    console.error("LỖI: Biến môi trường GEMINI_API_KEY chưa được thiết lập.");
+    // Tùy chọn: Dùng Key cứng cho mục đích phát triển cục bộ nếu cần thiết, 
+    // nhưng tốt nhất là BỎ HẲN.
+}
+
+const ai = new GoogleGenAI({apiKey: apiKey}); // SỬ DỤNG BIẾN apiKey ĐƯỢC ĐỌC TỪ process.env
 // Hàm làm giàu nội dung (enrichContent)
 // 🚨 Đảm bảo tham số ĐƯỢC ĐẶT TÊN là 'rawSchedule' để khớp với prompt bên trong
 async function enrichContent(rawSchedule) {
@@ -55,5 +61,6 @@ Cấu trúc Thời gian: Dùng kỹ thuật Pomodoro (ví dụ: 25 phút học, 
         throw error;
     }
 }
+
 
 module.exports = { enrichContent };
