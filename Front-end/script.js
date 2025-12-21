@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. Gửi dữ liệu đến backend
         try {
             console.log("Bắt đầu gọi API: /generate-schedule");
-            const response = await fetch('http://localhost:3000/generate-schedule', {
+            const response = await fetch('/generate-schedule', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
@@ -185,4 +185,5 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingSpinner.style.display = 'none';
         }
     });
+
 });
