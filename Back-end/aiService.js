@@ -38,45 +38,45 @@ function cleanJsonString(rawText) {
     return cleaned;
 }
 
-// Prompt cho AI để làm giàu nội dung (Giữ nguyên logic của bạn)
 const getSystemPrompt = (rawPlan) => {
-    return `
+    return `
 Bạn là Trợ lý Lập kế hoạch học tập AI. Dưới đây là dữ liệu thô về lịch học:
 
-    Dữ liệu thô: ${JSON.stringify(rawPlan)}
+Dữ liệu thô: ${JSON.stringify(rawPlan)}
 
-    Mục tiêu của bạn là biến 'rawPlan' thành 'finalSchedule' bằng cách làm giàu nội dung chi tiết cho từng buổi học (session).
+Mục tiêu của bạn là biến 'rawPlan' thành 'finalSchedule' bằng cách làm giàu nội dung chi tiết cho từng buổi học (session).
 
-    **QUY TẮC BẮT BUỘC:**
-    1.  **Luân phiên & Lồng ghép môn học (Micro-sessions):** KHÔNG được để một môn học xuất hiện QUÁ 2 LẦN LIÊN TIẾP trong các buổi học (sessions) của cùng một ngày. Nếu có thể, hãy lồng ghép các hoạt động nhẹ (như Đọc tin tức, Luyện viết đoạn văn, 20 phút Tiếng Anh, thiền) vào giữa các buổi học chính (1.0 giờ) để tối ưu hóa sự tập trung.
-    2.  **Phương pháp học tập hiệu quả (Phải được nêu rõ trong details):** Áp dụng các phương pháp học tập như: Active Recall, Spaced Repetition (từ Ngày 2), và Feynman Technique một cách hiệu quả, tránh lặp lại.
-ĐẦU RA BẮT BUỘC phải là MỘT CHUỖI JSON DUY NHẤT có cấu trúc sau:
+**QUY TẮC NỘI DUNG (Để đảm bảo AI tạo ra giá trị):**
+1.  **Phân tích:** Dựa trên Mục tiêu và Điểm yếu (có trong dữ liệu thô), đề xuất các nội dung học (topics) cụ thể cho từng môn học.
+2.  **Phương pháp học tập:** Luôn lồng ghép các phương pháp học tập hiệu quả như Active Recall, Spaced Repetition (từ Ngày 2), và Phương pháp Feynman vào phần 'details' của từng buổi học.
+3.  **Luân phiên:** Trong cùng một ngày, tránh để một môn học xuất hiện quá 2 lần liên tiếp.
+
+**ĐẦU RA BẮT BUỘC:**
+Phản hồi của bạn PHẢI là MỘT CHUỖI JSON DUY NHẤT, không có bất kỳ văn bản, lời giải thích hay ký tự Markdown nào bên ngoài cấu trúc này.
+
 {
-  "schedule": [
-    {
-      "day": "Ngày 1",
-      "sessions": [
-        {
-          "subject": "Toán",
-          "duration": 1.0,
-          "details": "Học Toán (1.0 giờ)",
-          "topics": ["Ôn tập hàm số bậc nhất (nếu điểm yếu là Hàm số)"], 
-        },
-        // ... các buổi học khác ...
-      ]
-    },
-    // ... các ngày khác ...
-  ],
-  "summary": "Mục tiêu: [Mục tiêu cũ]. Điểm yếu: [Điểm yếu cũ]...", // Giữ nguyên summary cũ
-  "goal": "[Mục tiêu cũ]",
-  "weakPoints": "[Điểm yếu cũ]",
-  "aiSummary": "[Tóm tắt AI mới dựa trên mục tiêu/điểm yếu]", // Tóm tắt mới (3-5 câu)
+  "schedule": [
+    {
+      "day": "Ngày 1",
+      "sessions": [
+        {
+          "subject": "Toán",
+          "duration": 1.0,
+          "details": "Bắt đầu với Active Recall 15 phút ôn tập hàm số bậc nhất. Sau đó, áp dụng phương pháp Feynman để tìm hiểu chương mới (1.0 giờ).", 
+          "topics": ["Ôn tập Hàm số Bậc nhất", "Giới thiệu Phương trình Bậc 2"], 
+        },
+        // ... các buổi học khác ...
+      ]
+    },
+    // ... các ngày khác ...
+  ],
+  "summary": "${rawPlan.summary}", // Giữ nguyên summary thô
+  "goal": "${rawPlan.goal}",
+  "weakPoints": "${rawPlan.weakPoints}",
+  "aiSummary": "[Tóm tắt AI mới, chỉ 3-4 câu, tập trung vào chiến lược]", // Tóm tắt ngắn gọn
 }
-
-Lịch học thô là: ${JSON.stringify(rawPlan, null, 2)}
 `;
 };
-
 
 async function enrichContent(rawPlan) {
     const prompt = getSystemPrompt(rawPlan);
@@ -112,3 +112,4 @@ async function enrichContent(rawPlan) {
 }
 
 module.exports = { enrichContent };
+
