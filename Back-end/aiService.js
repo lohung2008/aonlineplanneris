@@ -39,41 +39,39 @@ function cleanJsonString(rawText) {
 }
 
 const getSystemPrompt = (rawPlan) => {
+    // Chỉ lấy 7 ngày đầu tiên (hoặc tất cả nếu lịch < 7 ngày)
+    const shortSchedule = {
+        ...rawPlan,
+        schedule: rawPlan.schedule.slice(0, 7)
+    };
+    
+    // Tổng số ngày trong lịch gốc
+    const totalDays = rawPlan.schedule.length;
+
     return `
 Bạn là Trợ lý Lập kế hoạch học tập AI. Dưới đây là dữ liệu thô về lịch học:
 
-Dữ liệu thô: ${JSON.stringify(rawPlan)}
+Dữ liệu thô (Chỉ 7 ngày đầu tiên): ${JSON.stringify(shortSchedule)}
 
-Mục tiêu của bạn là biến 'rawPlan' thành 'finalSchedule' bằng cách làm giàu nội dung chi tiết cho từng buổi học (session).
+Mục tiêu của bạn là TẠO LỊCH HỌC CHI TIẾT cho CHỈ 7 NGÀY ĐẦU TIÊN (Ngày 1 đến Ngày 7).
+Với các ngày còn lại (từ Ngày 8 đến Ngày ${totalDays}), hãy giữ nguyên các buổi học (sessions) theo dữ liệu thô đã cung cấp.
 
-**QUY TẮC NỘI DUNG (Để đảm bảo AI tạo ra giá trị):**
-1.  **Phân tích:** Dựa trên Mục tiêu và Điểm yếu (có trong dữ liệu thô), đề xuất các nội dung học (topics) cụ thể cho từng môn học.
-2.  **Phương pháp học tập:** Luôn lồng ghép các phương pháp học tập hiệu quả như Active Recall, Spaced Repetition (từ Ngày 2), và Phương pháp Feynman vào phần 'details' của từng buổi học.
-3.  **Luân phiên:** Trong cùng một ngày, tránh để một môn học xuất hiện quá 2 lần liên tiếp.
+**QUY TẮC NỘI DUNG:**
+1.  **Phân tích & Topics:** Dựa trên Mục tiêu và Điểm yếu, đề xuất các nội dung học (topics) cụ thể cho 7 ngày đầu.
+2.  **Phương pháp học tập:** Luôn lồng ghép các phương pháp học tập như Active Recall, Spaced Repetition (từ Ngày 2), và Phương pháp Feynman vào phần 'details' của từng buổi học trong 7 ngày đầu.
+3.  **Luân phiên:** Trong 7 ngày đầu, tránh để một môn học xuất hiện quá 2 lần liên tiếp trong cùng một ngày.
 
 **ĐẦU RA BẮT BUỘC:**
-Phản hồi của bạn PHẢI là MỘT CHUỖI JSON DUY NHẤT, không có bất kỳ văn bản, lời giải thích hay ký tự Markdown nào bên ngoài cấu trúc này.
+Phản hồi của bạn PHẢI là MỘT CHUỖI JSON DUY NHẤT, chứa TOÀN BỘ lịch học (từ Ngày 1 đến Ngày ${totalDays}).
 
 {
   "schedule": [
-    {
-      "day": "Ngày 1",
-      "sessions": [
-        {
-          "subject": "Toán",
-          "duration": 1.0,
-          "details": "Bắt đầu với Active Recall 15 phút ôn tập hàm số bậc nhất. Sau đó, áp dụng phương pháp Feynman để tìm hiểu chương mới (1.0 giờ).", 
-          "topics": ["Ôn tập Hàm số Bậc nhất", "Giới thiệu Phương trình Bậc 2"], 
-        },
-        // ... các buổi học khác ...
-      ]
-    },
-    // ... các ngày khác ...
+    // ... Ngày 1 đến Ngày 7 (Chi tiết), Ngày 8 đến Ngày ${totalDays} (Thô)
   ],
-  "summary": "${rawPlan.summary}", // Giữ nguyên summary thô
+  "summary": "${rawPlan.summary}", 
   "goal": "${rawPlan.goal}",
   "weakPoints": "${rawPlan.weakPoints}",
-  "aiSummary": "[Tóm tắt AI mới, chỉ 3-4 câu, tập trung vào chiến lược]", // Tóm tắt ngắn gọn
+  "aiSummary": "[Tóm tắt AI mới, chỉ 3-4 câu, tập trung vào chiến lược]", 
 }
 `;
 };
@@ -112,4 +110,5 @@ async function enrichContent(rawPlan) {
 }
 
 module.exports = { enrichContent };
+
 
